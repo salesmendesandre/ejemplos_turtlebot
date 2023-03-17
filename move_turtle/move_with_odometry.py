@@ -3,7 +3,8 @@ from rclpy.node import Node
 from geometry_msgs.msg import Twist
 from nav_msgs.msg import Odometry
 from math import fabs
-
+from math import sqrt
+from math import pow
 class Turtlebot3Controller(Node):
 
     def __init__(self):
@@ -26,12 +27,14 @@ class Turtlebot3Controller(Node):
         else:
             # calculamos la distancia recorrida
             current_position = msg.pose.pose.position
-            distance_traveled = fabs(current_position.x - self.start_position_.x)
+            distance_traveled = fabs(sqrt(pow((current_position.x - self.start_position_.x),2) + pow((current_position.y - self.start_position_.y),2)))
+
+
 
             if distance_traveled >= self.distance_to_move_:
                 # si hemos recorrido la distancia deseada, detenemos el robot y cerramos el nodo
                 self.stop_moving()
-                self.get_logger().info('Robot ha recorrido %f metros y se ha detenido', distance_traveled)
+                self.get_logger().info('Robot ha recorrido X metros y se ha detenido')
                 rclpy.shutdown()
 
     def move(self):
@@ -53,7 +56,7 @@ def main(args=None):
     turtlebot3_controller = Turtlebot3Controller()
     turtlebot3_controller.move()
     rclpy.spin(turtlebot3_controller)
-    turtlebot3_controller.destroy_node()
+    #turtlebot3_controller.destroy_node()
 
 if __name__ == '__main__':
     main()
